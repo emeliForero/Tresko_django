@@ -1,0 +1,38 @@
+{% load static %}
+{% load i18n %}
+<div class="header-right">
+    <div class="user">
+        <img src="{{user.profile.photo.url}}" alt="Foto de perfil" class="profile-pic" alt ="Imagen de perfil">
+
+        <span class="username">
+            <a href="{% url 'dashboard' %}">
+                {{user.username}}
+            </a>
+        </span>
+
+        <button type="button" class="boton-logout" data-bs-toggle="modal" data-bs-target="#logout">
+            <img src="{% static 'img/log_out.jpg' %}" alt="Main" width="30" style="border-radius:50%; margin-right: 10px;" >
+          </button>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="logout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        
+        <div class="modal-body">
+            <center><img src="{% static 'img/atencion.png' %}" alt="Imagen" width="80" style="border-radius:50%;">
+            <p style="color: black;">{% trans "Are you sure you want to sign out?" %}</p></center>
+        </div>
+        <div class="modal-buttons">
+            <center>
+                <button type="button" class="cancel-logout" data-bs-dismiss="modal"><span>Cancelar</span></button>
+                <a href="{% url 'logout' %}"><button class="confirm-logout"><span>Salir</span></button></a>
+            </center>
+        <br>
+        </div>
+      </div>
+    </div>
+  </div>

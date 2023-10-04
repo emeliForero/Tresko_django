@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Actualizar Profesional
+{% endblock title %}
+
+{% block title_header %}
+Cuenta
+{% endblock title_header %}
+
+{% block content %}
+<section class="content">
+    {% include "includes/alerts.html" %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="text-center">Editar Cuenta : {{user_read.username}}</h4>
+                </div>
+                <div class="card-body">
+                    <form id="miFormulario" action="{% url 'update_account' user_read.id %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div>
+
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Nombre</label>
+                                {{user_form.first_name}}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Apellido</label>
+                                {{user_form.last_name}}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                    <label>Email</label>
+                                    {{user_form.email}}
+                            </div>
+                            
+                        </div>
+
+
+
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Telefono</label>
+                                {{user_form.phone_number}}
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                    <label>Foto</label>
+                                    {{profile_form.photo}}
+                            </div>
+                            
+                        </div>
+
+                        
+                        <div class="d-flex justify-content-end">
+                            
+                            <button type="submit" class="btn btn-primary" >Actualizar Profesional</button>
+                            
+                        </div>
+
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const formulario = document.getElementById('miFormulario');
+      
+        formulario.addEventListener('submit', function (e) {
+          e.preventDefault(); // Evita el envío del formulario por defecto
+          
+          // Aquí puedes realizar validaciones y procesar los datos del formulario
+          
+          mostrarConfirmacion(); // Llama a la función para mostrar SweetAlert
+        });
+      
+        function mostrarConfirmacion() {
+          Swal.fire({
+            title: '¿Estás seguro?',
+            text: '¿Deseas enviar este formulario?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, ¡enviar!',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Aquí puedes enviar el formulario o realizar cualquier otra acción necesaria
+              formulario.submit(); // Envía el formulario
+            }
+          });
+        }
+      });
+</script>
+{% endblock content %}

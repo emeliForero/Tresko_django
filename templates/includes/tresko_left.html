@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="header-left">
+  
+  <h2><a href="{% url 'dashboard' %}">Dashboard</a></h2>
+
+  {% comment %} <div class="dropdown">
+    <a class="btn workspace-button-drop dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+      {% trans "Workspaces" %}
+    </a> {% endcomment %}
+    
+    {% comment %} <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+      {% for workspace in workspaces %}
+      <li><a class="dropdown-item" href="{% url 'board_workspace' workspace.id %}">{{workspace.title}}</a></li>
+      {% endfor %}
+    </ul> {% endcomment %}
+  </div>
+
+</div>

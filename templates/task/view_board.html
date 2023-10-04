@@ -1,0 +1,1023 @@
+
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta charset="UTF-8">
+    <title>{% trans "Board" %} {{board.title_board}}</title>
+    <link href="{% static 'img/icos/iconlibrary.ico' %}" rel="shortcut icon" type="image/x-icon">
+
+        
+    <!-- Incluye el archivo CSS de Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Incluye jQuery (importante para Bootstrap 5) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        
+    <!-- Incluye Popper.js (importante para Bootstrap 5) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+
+    <!-- Incluye el archivo JavaScript de Bootstrap 5 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <script src="https://kit.fontawesome.com/2971e24128.js" crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet" href="{% static 'css/tresko.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tresko_header.css' %}">
+
+     
+
+    
+
+</head>
+<body>
+    <header>
+        {% include 'includes/tresko_left.html' %}
+        {% include 'includes/right_tresko.html' %} 
+    </header>
+    
+    <main>
+
+        
+        <nav class="navbar navbar-expand-lg navbar-second">
+            <div class="container-fluid">
+              <div class="editable-field-board">
+                <span class="field-text-board navbar-brand">{{board.title_board}}</span>
+                <button class="btn-edit-board button-edit-board" data-board-id="{{ board.id }}"><i class="fa-solid fa-pencil"></i></button>
+            </div>
+             
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                    <div class="favorite">
+                        {% if board.favorite %}
+                            <a href="{% url 'board_favorite' board.id False  %}"><span class="star">&#9733;</span></a>
+                        {% else %}
+                            <a href="{% url 'board_favorite' board.id True  %}"><span class="star">&#9734;</span></a>
+                        {% endif %}
+                    </div>
+                  </li>
+                </ul>
+                
+              </div>
+            </div>
+        </nav>
+
+        <div style="height: 1vh; background-color:rgba(214, 209, 202, 1);"></div>
+
+        <div class="scroll-container">
+
+            <div class="container-first">
+                    <div class="content-list">
+                        <div class="sortable-list"> 
+                                {% for list in lists %}
+            
+                                
+                                    <div class="col-md-3 col-list" data-list-id="{{ list.id }}">
+                                        <div class="list-header">
+                                            <div class="editable-field-list">
+                                                <span class="field-text-list card-title">{{list.list_title}}</span>
+                                                <button class="btn-edit-list button-edit-list" data-list-id="{{ list.id }}">&#128393;</button>
+                                                <a  href="{% url 'list_delete' list.id %}"  class="button-trash" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="fas fa-trash"></i></a>
+                                            </div>
+                                        </div>
+                                        <div class="card card-1" >
+                                            <div class="card-body card-body1">
+                                                {% for card in cards %}
+                                                    {% if card.list == list %}
+                                                    <div  class="card card-content" data-bs-toggle="modal" data-bs-target="#card_modal_{{ card.id }}"  draggable="true" data-card-id="{{ card.id }}">
+                                                            <div class="content-task">
+                                                                {% if card.file_imagen %}
+
+                                                                <center><img class="card-img-top" src="{{card.file_imagen.url}}" style="pointer-events: none;"></center>
+
+                                                                {% endif %}
+
+                                                                <span>{{card.card_title}}</span>
+                                                            </div>
+                                                    </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                            <div class="button-card">
+                                                <button data-bs-toggle="modal" data-bs-target="#card_modal" data-list-id="{{ list.id }}" class="add-card-button"><span class="plus">&#43;</span>{% trans "Add a Card" %}</button>
+                                            </div>
+                                    
+                                
+                                    </div>
+                                {% endfor %}
+                        </div>
+                        <div class="modal-buttons">
+                            <div class="button-add">
+                                <button data-bs-toggle="modal" data-bs-target="#list_modal"><span class="plus">&#43;</span>{% trans "Add another list" %}</button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        
+        <!-- Modal de crear lista--->  
+        <div class="modal fade" id="list_modal" tabindex="-1" aria-labelledby="modal_create_list" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{% trans "Create List" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'create_list' board.id %}" method="POST">
+                            {% comment %} <span >{% trans "Let's build a board" %}</span> {% endcomment %}
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>{% trans "List Title" %}</label>
+                                <input type="text" class="form-control" name="list_title" required>
+                                
+                            </div> 
+                            
+                            <div class="modal-buttons modal-footer">
+                                <button type="button" class="cancel-logout" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                <button type="submit" class="confirm-logout"><span>{% trans "Save" %}</span></button>
+                            </div>
+                            
+                        </form>
+                       
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de crear card--->  
+        <div class="modal fade" id="card_modal" tabindex="-1" aria-labelledby="modal_create_card" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{% trans "Create Card" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="card_form"  method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>{% trans "Card Title" %}</label>
+                                {{card_form.card_title}}
+                            </div> 
+                            <br>
+                            <div class="form-group">
+                                <label>{% trans "Card Description" %}</label>
+                                {{card_form.card_description}}
+                            </div> 
+                            <br>
+                            <div class="form-group">
+                                <label>{% trans "Card Image" %}</label>
+                                {{card_form.file_imagen}}
+                            </div> 
+                            <br>
+                            <div class="form-group">
+                                <label>{% trans "Card File" %}</label>
+                                {{file_form.file}}
+                            </div> 
+                            
+                            <div class="modal-buttons modal-footer">
+                                <button type="button" class="cancel-logout" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                <button type="submit" class="confirm-logout"><span>{% trans "Save" %}</span></button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de visualizar card--->  
+        {% for card in cards %}
+            <div class="modal fade" id="card_modal_{{ card.id }}" tabindex="-1" aria-labelledby="modal_view_card" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="editable-field-card">
+                                <span class="field-text-card">{{ card.card_title }}</span>
+                                <button class="btn-edit-card button-edit" data-card-id="{{ card.id }}">&#128393;</button>
+                                <a  href="{% url 'card_delete' card.id %}"  class="button-trash-card" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="fas fa-trash"></i></a>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body card-view">
+
+                            <h5>{% trans "Imagen" %}</h5>
+                            {% if card.file_imagen  %}
+                            <div class="card-thumbnail">
+                                <center>
+                                    
+                                    <img id="imagen-card" class="field-image img-card" src="{{ card.file_imagen.url }}">
+                                    <br>
+                                    <a class="attachment-thumbnail-details-tittle-options-item delete-image" href="#" data-card-id="{{ card.id }}">
+                                        <span class="attachment-thumbnail-details-options-item-text">{% trans "Delete" %}</span>
+                                    </a>
+                                </center>
+                                
+                            </div>
+
+                            {% else %}
+
+                            <div class="add-image-card">
+                                <input class="custom-file-upload" type="file" name="image_{{ card.id }}" id="fileInput_{{ card.id }}" accept="image/*" onchange="toggleAddImageButton(this)">
+                                <button class="after-button" data-card-id="{{ card.id }}" onclick="uploadImage(this)" id="addImageButton_{{ card.id }}">{% trans "Add Image" %}</button>
+                            </div>
+
+                            {% endif %}
+                            
+
+                            
+                            <h5>{% trans "Description" %}</h5>
+                            <div class="editable-field-description">
+                                <span class="field-text-description">{{ card.card_description }}</span>
+                                <button class="btn-edit-description button-edit" data-card-id="{{ card.id }}">&#128393;</button>
+                            </div>
+                            
+                                    <div class="window-module">
+                                        <div class="card-detail-activity">
+                                        <h5 >
+                                            {% trans "Attachments" %}
+                                        </h5>
+                                        
+                                        <div class="windows-module-title-options">
+                                            <div class="modal-buttons">
+                    
+                                                <button class="confirm-logout" onclick="openUploadFileModal({{ card.id }})"><span>{% trans "Add" %}</span></button>
+
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                {% for attachment  in card.card_attachments.all %}
+                                    <!-- Card edit-->
+                                        <div class="u-gutter">
+                                            <div class="u-clearfix">
+                                            <div class="attachment-thumbnail">
+                                                <a class="attachment-thumbnail-preview" href="{{attachment.file.url}}" target="_blank" title="" style="color: inheret">
+                                                    {{ attachment.get_file_extension }}
+                                                </a>
+                                                <p class="attachment-thumbnail-details">
+                                                <a class="attachment-thumbnail-name-file"  href="{{attachment.file.url}}" target="_blank"><span class="attachment-thumbnail-name">
+                                                    {{ attachment.get_file_name }}
+                                                </span></a>
+                                                <span class="attachment-thumbnail-details-title-options">
+                                                    <span>
+                                                        
+                                                        <span>
+                                                            <a class="attachment-thumbnail-details-tittle-options-item delete-attachment" href="#" data-attachment-id="{{ attachment.id }}">
+                                                                <span class="attachment-thumbnail-details-options-item-text">{% trans "Delete" %}</span>
+                                                            </a>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                                </p>
+                                            </div>
+                                            </div>
+                                        </div>
+                                {% endfor %}
+
+                            <h5 >
+                                {% trans "Comments" %}
+                            </h5>
+
+                            
+
+                                <form action="{% url 'add_comment_card' card.id %}" method="POST"  onsubmit="handleFileUpload(event)">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="cardId" value="{{ card.id }}">
+                                    <div class="form-floating">
+
+                                        <textarea class="form-control" name="comment" id="floatingTextarea"  placeholder="Leave a comment here" required></textarea>
+                                        <label for="floatingTextarea">Write a comment...</label>
+                                    </div> 
+
+                                   
+
+                                    <div class="modal-buttons-send">
+                                        <button class="confirm-logout " type="submit">{% trans "Send" %}</button>
+                                    </div>
+                                </form>
+
+
+                            <div>
+                                {% for comment  in card.comments.all|dictsortreversed:"id" %}
+                                    <section class="content-comment">
+                                        <div class="area-comment">
+                                            <div class="avatar">
+                                                <img src="{{comment.user_created.profile.photo.url}}" alt="imgprofile" />
+                                            </div>
+                                            <div class="inputs-comments">
+                                                <h4 class="name-user">{{comment.user_created}} <span class="date-created-commet">({{comment.date_created}})</span></h4>
+                                                <form action="{% url 'delete_comment_card' comment.id %}" method="POST"onsubmit="handleFileUpload(event)">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="cardId" value="{{ card.id }}">
+                                                    <button type="submit" class="delete-comment"><i class="fa-solid fa-x"></i></i></button>
+                                                </form>
+
+                                                <div style="clear: both;">
+                                                    <p class="user-comment">{{comment.content}}</p>
+                                                </div>
+                                                
+                                            </div>
+
+                                            
+                                            
+                                        </div>
+                                        
+                                    </section>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        
+            <div class="modal fade" id="create_file_{{ card.id }}" tabindex="-1" aria-labelledby="modal_upload_file" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content modal-second-deep">
+                        <div class="modal-header modal-second-border">
+                            <h5 class="modal-title">{% trans "Upload File" %} {{card.card_title}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{% url 'upload_file' card.id %}" method="POST" enctype="multipart/form-data" onsubmit="handleFileUpload(event)">
+                                {% csrf_token %}
+                                <input type="hidden" name="cardId" value="{{ card.id }}">
+                                <div class="form-group">
+                                    <label>{% trans "Upload File" %}</label>
+                                        {{file_form.file}}
+                                </div> 
+                                <div class="modal-buttons modal-footer">
+                                    <button type="button" class="cancel-logout" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                    <button type="submit" class="confirm-logout" ><span>{% trans "Save" %}</span></button>
+                                </div>
+                                
+                            </form>
+                           
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+
+        <!-- modal de confirmación -->
+        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">{% trans "Deletion confirmation" %}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {% trans "Are you sure you want to delete this item?" %}
+                    </div>
+                    <div class="modal-footer">
+                        <div class="modal-buttons">
+                            <button type="button" class="cancel-logout" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                            <a id="deleteLink"><button class="confirm-logout"><span>{% trans "Delete" %}</span></button></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </main>
+
+
+    <script>
+
+        $(function () {
+            $(".sortable-list").sortable({
+                connectWith: ".sortable-list", // Permite arrastrar entre listas
+                handle: ".list-header", // Define el área de agarre para arrastrar
+                placeholder: "list-placeholder", // Clase para el marcador de posición
+                forcePlaceholderSize: true, // Mantiene el espacio ocupado por la lista mientras se arrastra
+                tolerance: "pointer", // Mejora la precisión al soltar
+                start: function (event, ui) {
+                    ui.placeholder.height(ui.helper.height()); // Ajusta la altura del marcador de posición
+                },
+                update: function (event, ui) {
+                    console.log('Evento "update" ejecutado.');
+                    // Obtén el nuevo orden de las listas
+                    const newListOrder = $(".col-md-3").toArray().map(list => list.getAttribute('data-list-id'));
+                    console.log(newListOrder)
+                    // Realiza una solicitud AJAX para actualizar el orden de las listas en el servidor
+                    $.ajax({
+                        type: "POST",
+                        url: "/tresko/update_list_order/",
+                        headers: {
+                            "X-CSRFToken": getCookie("csrftoken")
+                        },
+                        data: {
+                            new_list_order: newListOrder
+                        },
+                        success: function (response) {
+                            // Maneja la respuesta del servidor si es necesario
+                            if (response.success) {
+                                console.log('El orden de las listas se ha actualizado con éxito.');
+                            } else {
+                                console.error('Error al actualizar el orden de las listas.');
+                            }
+                        },
+                        error: function (error) {
+                            // Maneja errores si es necesario
+                            console.error('Error en la solicitud AJAX:', error);
+                        }
+                    });
+                }
+            });
+        });
+
+        $(".sortable-list").disableSelection();
+
+        $('.button-trash').on('click', function(e) {
+            e.preventDefault();
+            var deleteUrl = $(this).attr('href');
+            $('#deleteLink').attr('href', deleteUrl);
+        });
+
+        $('.button-trash-card').on('click', function(e) {
+            e.preventDefault();
+            var deleteUrl = $(this).attr('href');
+            $('#deleteLink').attr('href', deleteUrl);
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var cardToOpen = localStorage.getItem('cardToOpen');
+            if (cardToOpen) {
+                $(`#card_modal_${cardToOpen}`).modal('show');
+                localStorage.removeItem('cardToOpen'); // Elimina la información después de abrir el modal
+            }
+
+        });
+
+        function handleFileUpload(event) {
+           // event.preventDefault(); // Evitar el envío predeterminado del formulario
+            
+            // Obtén el cardId desde el formulario
+            const cardId = event.target.querySelector('input[name="cardId"]').value;
+            console.log('se ejecuto')
+            // Guarda el cardId en localStorage
+            localStorage.setItem('cardToOpen', cardId);
+        
+        }
+
+        
+
+        //obtener cookie csrf_token
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Comprueba si esta cookie tiene el nombre que estás buscando
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        //fin cookie
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            //eliminar file ajax
+            $('.delete-attachment').on('click', function (e) {
+                e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
+            
+                var attachmentId = $(this).data('attachment-id');
+                var attachmentElement = $(this).closest('.attachment-thumbnail'); // Seleccionar el elemento del archivo adjunto
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/tresko/delete_file/' + attachmentId + '/',
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken") // Utiliza getCookie aquí
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            // Eliminación exitosa, ocultar o eliminar el elemento del archivo adjunto
+                            attachmentElement.remove(); // Elimina el elemento del archivo adjunto
+                        } else {
+                            // Manejar un mensaje de error si es necesario
+                            
+                        }
+                    },
+                    error: function () {
+                        
+                    }
+                });
+            });
+
+
+            //add card
+            var addCardButtons = document.querySelectorAll(".add-card-button");
+            addCardButtons.forEach(function (button) {
+                button.addEventListener("click", function () {
+                    var listId = button.getAttribute("data-list-id");
+                    var cardForm = document.querySelector("#card_form");
+                    cardForm.action = "/tresko/create_card/" + listId + "/";
+                });
+            });
+
+
+            //delete image card
+            $('.delete-image').on('click', function (e) {
+                e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
+                
+                const cardId = $(this).data('card-id');
+
+                
+
+                var cardElement = $(this).closest('.card-thumbnail'); // Seleccionar el elemento del archivo adjunto
+                $.ajax({
+                    type: 'POST',
+                    url: '/tresko/delete_image_card/' + cardId + '/',
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken") // Utiliza getCookie aquí
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            // Eliminación exitosa, ocultar o eliminar el elemento del archivo adjunto
+                            //cardElement.remove(); // Elimina el elemento del archivo adjunto
+                            
+                            localStorage.setItem('cardToOpen', cardId);
+                            location.reload()
+
+                        } else {
+                            // Manejar un mensaje de error si es necesario
+                            
+                        }
+                    },
+                    error: function () {
+                        
+                    }
+                });
+            });
+
+
+        });
+        
+
+        // Mostrar el segundo modal sin cerrar el primero
+        function openUploadFileModal(cardId) { 
+            $('#create_file_' + cardId).modal('show');
+        }
+        //fin mostrar segundo modal
+
+
+        //arrastrar y soltar las card
+        const cards = document.querySelectorAll('.card-content[draggable="true"]');
+        let draggedCard = null;
+
+        cards.forEach((card) => {
+            card.addEventListener('dragstart', (e) => {
+                draggedCard = e.target;
+                e.dataTransfer.setData('text/plain', ''); // Firefox requiere este dato
+                setTimeout(() => {
+                    card.style.display = 'none'; // Ocultar la tarjeta original mientras se arrastra
+                }, 0);
+            });
+
+            card.addEventListener('dragend', () => {
+                setTimeout(() => {
+                    draggedCard.style.display = 'block'; // Mostrar la tarjeta original después de soltarla
+                    draggedCard = null;
+                }, 0);
+            });
+
+            
+
+        });
+
+        
+        const lists = document.querySelectorAll('.col-md-3');
+
+        lists.forEach((list) => {
+            list.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            list.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                list.style.backgroundColor = 'lightgray'; // Cambia el fondo de la lista para indicar que puedes soltar aquí
+            });
+
+            list.addEventListener('dragleave', () => {
+                list.style.backgroundColor = ''; // Restaura el fondo de la lista cuando sales
+            });
+
+            list.addEventListener('drop', (e) => {
+                e.preventDefault();
+                list.style.backgroundColor = '';
+
+                // Obtén el ID de la tarjeta que se está moviendo
+                const cardId = draggedCard.getAttribute('data-card-id');
+                
+                // Obtén el ID de la lista de destino
+                const newListId = list.getAttribute('data-list-id');
+                
+
+                // Realiza una solicitud AJAX para mover la tarjeta
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'move_card' %}",
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken") // Utiliza getCookie aquí
+                    },
+                    data: {
+                        card_id: cardId,
+                        new_list_id: newListId
+                    },
+                    success: function (response) {
+                        // Maneja la respuesta del servidor
+
+                        if (response.message) {
+
+                            //alert(response.message);
+                            
+                            // Actualiza la interfaz de usuario
+                            const updatedCardId = response.updated_card_id;
+                            const updatedCard = document.querySelector(`[data-card-id="${updatedCardId}"]`);
+                            
+                            if (updatedCard) {
+                                // Mueve la tarjeta a la nueva lista
+                                list.querySelector('.card-body').appendChild(updatedCard);
+                            }
+                        }
+                    },
+                    error: function (error) {
+                        //alert('Error al mover la tarjeta: ' + error.responseJSON.error);
+                    }
+                });
+            });
+        });
+        //fin de arrastrar y soltar
+
+        //actualizar 
+        $(document).ready(function () {
+
+            //tittle board
+            $('.btn-edit-board').click(function () {
+                const editableField = $(this).closest('.editable-field-board');
+                const fieldText = editableField.find('.field-text-board');
+                const fieldValue = fieldText.text();
+                const boardId = $(this).data('board-id');
+                // Reemplazar el texto con un campo de entrada
+                const inputField = $('<input type="text">');
+                inputField.val(fieldValue);
+                fieldText.empty().append(inputField);
+        
+                // Ocultar el botón "Editar"
+                $(this).hide();
+                
+                
+                // Mostrar botones de "Guardar" y "Cancelar"
+                const btnSave = $('<button class="btn-save buttons-save-js">Save</button>');
+                const btnCancel = $('<button class="btn-cancel buttons-cancel-js">Cancel</button>');
+                editableField.append(btnSave);
+                editableField.append(btnCancel);
+        
+                // Escuchar clic en "Guardar"
+                btnSave.click(function () {
+                    const newValue = inputField.val();
+                    // Obtener el ID de la tarjeta desde el modal
+        
+                    // Realizar una solicitud AJAX para actualizar el valor en la base de datos
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'update_title_board' %}", // URL de tu vista de actualización
+                        headers: {
+                            "X-CSRFToken": getCookie("csrftoken") // Utiliza getCookie aquí
+                        },
+                        data: {
+                            board_id: boardId,
+                            new_value: newValue
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                // Actualizar el valor en el modal
+                                fieldText.text(newValue);
+        
+                                // Mostrar de nuevo el botón "Editar"
+                                $('.btn-edit-board').show();
+                                
+                                // Ocultar los botones "Guardar" y "Cancelar"
+                                btnSave.remove();
+                                btnCancel.remove();
+
+
+                            } else {
+                                // Manejar errores si la actualización no fue exitosa
+                                alert('Error al actualizar la tarjeta.');
+                            }
+                        },
+                        error: function () {
+                            // Manejar errores de la solicitud AJAX
+                            alert('Error de conexión al servidor.');
+                        }
+                    });
+                });
+
+                // Escuchar clic en "Cancelar"
+                btnCancel.click(function () {
+                    // Restablecer la vista original
+                    fieldText.text(fieldValue);
+                    $('.btn-edit-board').show();
+                    btnSave.remove();
+                    btnCancel.remove();
+                });
+            });
+
+            //tittle list
+            $('.btn-edit-list').click(function () {
+                const editableField = $(this).closest('.editable-field-list');
+                const fieldText = editableField.find('.field-text-list');
+                const fieldValue = fieldText.text();
+                const listId = $(this).data('list-id');
+                // Reemplazar el texto con un campo de entrada
+                const inputField = $('<input type="text">');
+                inputField.val(fieldValue);
+                fieldText.empty().append(inputField);
+        
+                // Ocultar el botón "Editar"
+                $(this).hide();
+                
+                
+                // Mostrar botones de "Guardar" y "Cancelar"
+                const btnSave = $('<button class="btn-save buttons-save-js">Save</button>');
+                const btnCancel = $('<button class="btn-cancel buttons-cancel-js">Cancel</button>');
+                editableField.append(btnSave);
+                editableField.append(btnCancel);
+        
+                // Escuchar clic en "Guardar"
+                btnSave.click(function () {
+                    const newValue = inputField.val();
+                    // Obtener el ID de la tarjeta desde el modal
+        
+                    // Realizar una solicitud AJAX para actualizar el valor en la base de datos
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'update_title_list' %}", // URL de tu vista de actualización
+                        headers: {
+                            "X-CSRFToken": getCookie("csrftoken") // Utiliza getCookie aquí
+                        },
+                        data: {
+                            list_id: listId,
+                            new_value: newValue
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                // Actualizar el valor en el modal
+                                fieldText.text(newValue);
+        
+                                // Mostrar de nuevo el botón "Editar"
+                                $('.btn-edit-list').show();
+                                
+                                // Ocultar los botones "Guardar" y "Cancelar"
+                                btnSave.remove();
+                                btnCancel.remove();
+
+                                
+
+                            } else {
+                                // Manejar errores si la actualización no fue exitosa
+                                alert('Error al actualizar la tarjeta.');
+                            }
+                        },
+                        error: function () {
+                            // Manejar errores de la solicitud AJAX
+                            alert('Error de conexión al servidor.');
+                        }
+                    });
+                });
+
+                // Escuchar clic en "Cancelar"
+                btnCancel.click(function () {
+                    // Restablecer la vista original
+                    fieldText.text(fieldValue);
+                    $('.btn-edit-list').show();
+                    btnSave.remove();
+                    btnCancel.remove();
+                });
+            });
+           
+            //tittle card
+            $('.btn-edit-card').click(function () {
+                const editableField = $(this).closest('.editable-field-card');
+                const fieldText = editableField.find('.field-text-card');
+                const fieldValue = fieldText.text();
+                const cardId = $(this).data('card-id');
+
+                // Reemplazar el texto con un campo de entrada
+                const inputField = $('<input type="text">');
+                inputField.val(fieldValue);
+                fieldText.empty().append(inputField);
+        
+                // Ocultar el botón "Editar"
+                $(this).hide();
+        
+                // Mostrar botones de "Guardar" y "Cancelar"
+                const btnSave = $('<button class="btn-save buttons-save-js">Save</button>');
+                const btnCancel = $('<button class="btn-cancel buttons-cancel-js">Cancel</button>');
+                editableField.append(btnSave);
+                editableField.append(btnCancel);
+        
+                // Escuchar clic en "Guardar"
+                btnSave.click(function () {
+                    const newValue = inputField.val();
+                     // Obtener el ID de la tarjeta desde el modal
+        
+                    // Realizar una solicitud AJAX para actualizar el valor en la base de datos
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'update_title' %}", // URL de tu vista de actualización
+                        headers: {
+                            "X-CSRFToken": getCookie("csrftoken") // Utiliza getCookie aquí
+                        },
+                        data: {
+                            card_id: cardId,
+                            new_value: newValue
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                // Actualizar el valor en el modal
+                                fieldText.text(newValue);
+        
+                                // Mostrar de nuevo el botón "Editar"
+                                $('.btn-edit-card').show();
+        
+                                // Ocultar los botones "Guardar" y "Cancelar"
+                                btnSave.remove();
+                                btnCancel.remove();
+
+
+                            } else {
+                                // Manejar errores si la actualización no fue exitosa
+                                alert('Error al actualizar la tarjeta.');
+                            }
+                        },
+                        error: function () {
+                            // Manejar errores de la solicitud AJAX
+                            alert('Error de conexión al servidor.');
+                        }
+                    });
+                });
+
+                // Escuchar clic en "Cancelar"
+                btnCancel.click(function () {
+                    // Restablecer la vista original
+                    fieldText.text(fieldValue);
+                    $('.btn-edit-card').show();
+                    btnSave.remove();
+                    btnCancel.remove();
+                });
+            });
+
+            //description
+            $('.btn-edit-description').click(function () {
+                const editableField = $(this).closest('.editable-field-description');
+                const fieldText = editableField.find('.field-text-description');
+                const fieldValue = fieldText.text();
+                const cardId = $(this).data('card-id');
+
+                // Reemplazar el texto con un campo de entrada
+                const inputField = $('<textarea rows="4" cols="50">');
+                inputField.val(fieldValue);
+                fieldText.empty().append(inputField);
+        
+                // Ocultar el botón "Editar"
+                $(this).hide();
+        
+                // Mostrar botones de "Guardar" y "Cancelar"
+                const btnSave = $('<button class="btn-save buttons-save-js">Save</button>');
+                const btnCancel = $('<button class="btn-cancel buttons-cancel-js">Cancel</button>');
+                editableField.append(btnSave);
+                editableField.append(btnCancel);
+        
+                // Escuchar clic en "Guardar"
+                btnSave.click(function () {
+                    const newValue = inputField.val();
+                    // Obtener el ID de la tarjeta desde el modal
+        
+                    // Realizar una solicitud AJAX para actualizar el valor en la base de datos
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'update_description' %}", // URL de tu vista de actualización
+                        headers: {
+                            "X-CSRFToken": getCookie("csrftoken") // Utiliza getCookie aquí
+                        },
+                        data: {
+                            card_id: cardId,
+                            new_value: newValue
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                // Actualizar el valor en el modal
+                                fieldText.text(newValue);
+        
+                                // Mostrar de nuevo el botón "Editar"
+                                $('.btn-edit-description').show();
+        
+                                // Ocultar los botones "Guardar" y "Cancelar"
+                                btnSave.remove();
+                                btnCancel.remove();
+
+                                
+
+                            } else {
+                                // Manejar errores si la actualización no fue exitosa
+                                alert('Error al actualizar la tarjeta.');
+                            }
+                        },
+                        error: function () {
+                            // Manejar errores de la solicitud AJAX
+                            alert('Error de conexión al servidor.');
+                        }
+                    });
+                });
+
+
+        
+                // Escuchar clic en "Cancelar"
+                btnCancel.click(function () {
+                    // Restablecer la vista original
+                    fieldText.text(fieldValue);
+                    $('.btn-edit-description').show();
+                    btnSave.remove();
+                    btnCancel.remove();
+                });
+            });
+
+        });
+
+        //subir imagen card
+        function uploadImage(button) {
+            // Obtén el ID de la tarjeta desde el atributo data-card-id
+            const cardId = button.getAttribute('data-card-id');
+        
+            // Obtén el campo de entrada de archivos por su ID
+            const fileInput = document.getElementById(`fileInput_${cardId}`);
+        
+            // Verifica si se ha seleccionado un archivo
+            if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+                //alert('No se ha seleccionado una imagen.');
+                return;
+            }
+
+            // Crea un objeto FormData y agrega la imagen seleccionada
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]); // 'image' es el nombre del campo en tu formulario
+            
+            // Realiza una solicitud AJAX para cargar la imagen
+            fetch(`/tresko/upload_image/${cardId}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'), // Asegúrate de tener esta función para obtener el token CSRF
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    // La imagen se cargó con éxito
+                    // Puedes realizar alguna acción, como recargar la página o actualizar la vista modal
+                    localStorage.setItem('cardToOpen', cardId);
+                    location.reload(); // Recarga la página por ejemplo
+                    //mostrar mododal
+
+                } else {
+                    //console.error('Error al cargar la imagen:', response.status, response.statusText);
+                }
+            })
+            .catch(error => {
+                //console.error('Error de red:', error);
+            });
+
+        }
+
+    </script>
+    
+   
+    
+</body>
+</html>

@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tresko</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'lib/admin/plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="{% static 'lib/admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'lib/admin/css/adminlte.min.css' %}">
+</head>
+<body  style="background: rgb(238,174,202);
+background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);">
+
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <!-- Contenido que quieres centrar -->
+    <div>
+        <section class="content">
+            {% include "includes/alerts.html" %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="text-center">Registro de Cuenta</h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="miFormulario" action="{% url 'create_account' %}" method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Nombre</label>
+                                        {{user_create.first_name}}
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Apellido</label>
+                                        {{user_create.last_name}}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                            <label>Email</label>
+                                            {{user_create.email}}
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Contraseña</label>
+                                        {{user_create.password}}
+                                    </div>
+                                    
+                                </div>
+        
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Telefono</label>
+                                        {{user_create.phone_number}}
+                                    </div>
+        
+                                    <div class="form-group col-md-6">
+                                        <label>Foto</label>
+                                        {{profile_create.photo}}
+                                    </div>
+                                    
+                                </div>
+        
+                               
+        
+                                
+                                <div class="d-flex justify-content-end">
+                                    
+                                    <button type="submit" class="btn btn-primary" >Registrar Cuenta</button>
+                                    
+                                </div>
+        
+        
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+  
+
+
+<!-- jQuery -->
+<script src="{% static 'lib/admin/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'lib/admin/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'lib/admin/js/adminlte.min.js' %}"></script>
+<script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

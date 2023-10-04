@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Espacio Trabajo
+{% endblock title %}
+
+{% block title_header %}
+Espacio Trabajo : {{workspace}}
+{% endblock title_header %}
+
+{% block content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card content-workspace">
+                    <div class="card-body space-center">
+                        <div class="div-workspace">
+                            <h3>{{workspace.title}}</h3>
+                            <div class="modal-buttons">
+                                <button data-toggle="modal" data-target="#creartablero" class="confirm-logout create-board"><span>Crear Tableros</span></button>
+                            </div>
+                        </div>
+                        {% if workspace.description %}
+                        <div class="description">
+                            <span >{{workspace.description}}</span>
+                        </div>
+                        {% else %}
+                        <br>
+                        {% endif %}
+                        <hr>
+                
+                
+                        <div class="card-body space-center">
+                            {% if favorite %}
+                            <h5 class="card-title">Tus Tableros Favoritos</h5>
+                            {% else %}
+                            <h5 class="card-title">Tus Tableros</h5>
+                            {% endif %}
+                        <br>
+                        <br>
+                            <div class="row">
+                                {% if boards %}
+                                {% for board in boards %}
+                                <div class="col-md-3">
+                                    <a class="nolink" href="{% url 'view_board' board.id %}">
+                                        <div class="card card-size">
+                                            <div class="card-body">
+                                                <div class="titleboard">
+                                                <h5>{{board.title_board}}</h5>
+                                                </div>
+                                                
+                                                <div class="favorite">
+                                                    {% if board.favorite %}
+                                                        <a href="{% url 'board_favorite' board.id False  %}"><span class="star">&#9733;</span></a>
+                                                    {% else %}
+                                                        <a href="{% url 'board_favorite' board.id True  %}"><span class="star">&#9734;</span></a>
+                                                    {% endif %}
+                                                    
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        <br>
+                                    </a>
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                {% if favorite %}
+                                <h5 class="card-title">No tienes tableros favoritos</h5>
+                                {% else %}
+                                <h5 class="card-title">No tienes tableros creados en este espacio de trabajo</h5>
+                                {% endif %}
+                                {% endif %}
+                
+                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+
+    </div>
+</section>
+
+<div class="modal fade" id="creartablero" tabindex="-1" role="dialog" aria-labelledby="crearEspacioModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="crearEspacioModalLabel">Crear Tablero</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'create_board' workspace.id %}" method="POST">
+                <span >vamos a construir un tablero</span>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Titulo Tablero</label>
+                    <input type="text" class="form-control" name="title_board" required>
+                    
+                </div> 
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+                
+            </form>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

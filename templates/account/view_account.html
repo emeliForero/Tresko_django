@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+ver cuenta {{user_read.username}}
+{% endblock title %}
+
+{% block title_header %}
+Cuenta
+{% endblock title_header %}
+
+{% block content %}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="card card-primary card-outline">
+                    <div class="card-body box-profile">
+                        <div class="text-center">
+                            <img class="profile-user-img img-fluid img-circle" src="{{profile_read.photo.url}}"
+                                alt="User profile picture">
+                        </div>
+
+                        <h3 class="profile-username text-center">{{user_read.username}}</h3>
+                        <h5 class=" text-center">{{user_read.email}}</h5>
+
+                    </div>
+                    <div class="text-center">
+                        <div class="card-body">
+                            <div class="form-row">
+
+                                <div class="form-group col-md-5">
+                                    <ul class="list-group list-group-unbordered mb-3">
+                                        <li class="list-group-item">
+                                            <b>Nombres: </b><span>{{user_read.first_name}}</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Apellidos: </b><span>{{user_read.last_name}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="form-group col-md-5">
+                                    <ul class="list-group list-group-unbordered mb-3">
+                                        <li class="list-group-item">
+                                            <b>Telefono: </b><span>{{user_read.phone_number}}</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Email: </b><span>{{user_read.email}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <a href="{% url 'update_account' user_read.id %}" class="btn btn-primary btn-block"><b>Editar</b></a>
+                    
+                </div>
+
+
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+{% endblock content %}

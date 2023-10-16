@@ -1,0 +1,74 @@
+/* ESTILOS PARA EL ENCABEZADO */
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+  	background-color: #000000;
+	color: #fff;
+	height: 7vh;
+	padding: 0 20px;
+}
+
+.header-left {
+	display: flex;
+	align-items: center;
+}
+
+.header-right {
+	display: flex;
+	align-items: center;
+}
+
+.header-left h4 {
+  margin-right: 30px;
+}
+  
+.header-left h2 {
+  margin-right: 20px;
+}
+
+.user {
+	display: flex;
+	align-items: center;
+	margin-left: 10px;
+}
+
+.profile-pic {
+	border-radius: 50%;
+	margin-right: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 35px;
+}
+
+.username {
+	font-weight: bold;
+	margin-right: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+.boton-logout{
+    border: none;
+    background: none;
+}
+
+.workspace-button-drop {
+	color: white;
+	font-size: 18px;
+	font-weight: 500;
+	border-color: transparent;
+  }
+  
+  .workspace-button-drop:hover {
+	background-color: #1e2124;
+	color: white;
+	border-color: inherit;
+  }
+
+
+
+

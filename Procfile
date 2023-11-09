@@ -1,1 +1,1 @@
- web: gunicorn 'tresko.wsgi'
+ web: python manage.py runserver && gunicorn 'tresko.wsgi'
